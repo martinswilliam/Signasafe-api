@@ -1,6 +1,7 @@
 package br.com.seunome.signasafe.controller;
 
 import java.security.KeyPair;
+import java.util.Base64;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
