@@ -1,5 +1,6 @@
 package br.com.seunome.signasafe.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -11,10 +12,14 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration // Indica que esta é uma classe de configuração do Spring
 @EnableWebSecurity // Habilita a segurança web do Spring
 public class SecurityConfig {
+
+     @Autowired
+    private SecurityFilter securityFilter; // Injeta nosso filtro
 
     @Bean // @Bean expõe o método como um "Bean" gerenciado pelo Spring
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -35,7 +40,8 @@ public class SecurityConfig {
                         // Exige autenticação para qualquer outra requisição.
                         .anyRequest().authenticated()
                 )
-
+                // Adiciona nosso filtro para ser executado antes do filtro padrão de autenticação
+                .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 // Constrói o objeto de configuração.
                 .build();
     }
