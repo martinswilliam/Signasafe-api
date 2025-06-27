@@ -30,7 +30,12 @@ jobs:
           java-version: "21"
           distribution: "temurin"
 
-      # 3. Passo para compilar e testar o projeto usando nosso Maven Wrapper
+      # 3. NOVO PASSO: Concede permissão de execução ao Maven Wrapper
+      # O comando 'chmod +x' é o comando padrão do Linux para tornar um arquivo executável.
+      - name: Make Maven Wrapper executable
+        run: chmod +x mvnw
+
+      # 4. Passo para compilar e testar o projeto usando nosso Maven Wrapper
       # Este é o passo mais importante, ele executa o mesmo comando que usamos localmente!
       - name: Build and Test with Maven
         run: ./mvnw clean install
