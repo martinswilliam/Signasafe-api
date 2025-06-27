@@ -3,7 +3,6 @@ package br.com.seunome.signasafe.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,13 +32,12 @@ public class SecurityConfig {
 
                 // 3. Configura as regras de autorização para as requisições HTTP.
                 .authorizeHttpRequests(authorize -> authorize
-                        // Permite acesso público (sem autenticação) para os endpoints de cadastro e login.
-                        .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
+        // Permite acesso público para QUALQUER requisição em caminhos que comecem com /auth/
+        .requestMatchers("/auth/**").permitAll()
 
-                        // Exige autenticação para qualquer outra requisição.
-                        .anyRequest().authenticated()
-                )
+        // Exige autenticação para qualquer outra requisição.
+        .anyRequest().authenticated()
+)
                 // Adiciona nosso filtro para ser executado antes do filtro padrão de autenticação
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 // Constrói o objeto de configuração.
