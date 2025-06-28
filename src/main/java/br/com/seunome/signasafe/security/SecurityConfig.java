@@ -1,5 +1,7 @@
 package br.com.seunome.signasafe.security;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,48 +14,56 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-@Configuration // Indica que esta é uma classe de configuração do Spring
-@EnableWebSecurity // Habilita a segurança web do Spring
+@Configuration
+@EnableWebSecurity
 public class SecurityConfig {
 
-     @Autowired
-    private SecurityFilter securityFilter; // Injeta nosso filtro
+    @Autowired
+    private SecurityFilter securityFilter;
 
-    @Bean // @Bean expõe o método como um "Bean" gerenciado pelo Spring
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-                // 1. Desabilita o CSRF (Cross-Site Request Forgery), pois nossa autenticação será stateless via token.
                 .csrf(csrf -> csrf.disable())
-
-                // 2. Configura a política de gerenciamento de sessão para STATELESS.
-                // O servidor não irá guardar nenhuma informação de sessão do usuário.
+                // APLICA A NOSSA CONFIGURAÇÃO GLOBAL DE CORS
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                // 3. Configura as regras de autorização para as requisições HTTP.
                 .authorizeHttpRequests(authorize -> authorize
-        // Permite acesso público para QUALQUER requisição em caminhos que comecem com /auth/
-        .requestMatchers("/auth/**").permitAll()
-
-        // Exige autenticação para qualquer outra requisição.
-        .anyRequest().authenticated()
-)
-                // Adiciona nosso filtro para ser executado antes do filtro padrão de autenticação
+                        .requestMatchers("/auth/**").permitAll()
+                        .anyRequest().authenticated()
+                )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
-                // Constrói o objeto de configuração.
                 .build();
     }
 
-    // Bean para o gerenciador de autenticação, necessário para o processo de login.
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    // Bean que define o algoritmo de criptografia de senhas.
-    // Usaremos o BCrypt, que é o padrão recomendado.
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    // NOVO BEAN PARA CONFIGURAR O CORS DE FORMA CENTRALIZADA
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        // Permite requisições da nossa origem do Angular
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+        // Permite os métodos HTTP que nosso frontend usará
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        // Permite os cabeçalhos que nosso frontend poderá enviar
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // Aplica esta configuração para TODAS as rotas da nossa API ("/**")
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }
