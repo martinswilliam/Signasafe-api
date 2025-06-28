@@ -1,15 +1,21 @@
 package br.com.seunome.signasafe.service;
 
-import br.com.seunome.signasafe.model.Document;
-import br.com.seunome.signasafe.model.User;
-import br.com.seunome.signasafe.repository.DocumentRepository;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Base64;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.Base64;
+import br.com.seunome.signasafe.dto.DocumentItemDTO;
+import br.com.seunome.signasafe.model.Document;
+import br.com.seunome.signasafe.model.User;
+import br.com.seunome.signasafe.repository.DocumentRepository;
+
 
 @Service
 public class DocumentService {
@@ -52,4 +58,16 @@ public class DocumentService {
 
         return documentRepository.save(newDocument);
     }
+
+    // NOVO MÉTODO
+    public List<DocumentItemDTO> getDocumentsByUser(UUID ownerId) {
+    return documentRepository.findAllByOwnerId(ownerId) // <-- CHAMADA ATUALIZADA
+            .stream()
+            .map(doc -> new DocumentItemDTO(
+                doc.getId(), 
+                doc.getFileName(), 
+                doc.getCreatedAt()
+            ))
+            .collect(Collectors.toList());
+}
 }

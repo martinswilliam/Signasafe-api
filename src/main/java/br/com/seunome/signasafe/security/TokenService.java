@@ -1,16 +1,18 @@
 package br.com.seunome.signasafe.security;
 
-import br.com.seunome.signasafe.model.User;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import br.com.seunome.signasafe.model.User;
 
 @Service // Marca esta classe como um serviço do Spring
 public class TokenService {
@@ -42,19 +44,29 @@ public class TokenService {
      * Valida um token JWT e retorna o "dono" do token (o e-mail do usuário).
      */
     public String validateToken(String token) {
-        try {
-            Algorithm algorithm = Algorithm.HMAC256(secret);
+    try {
+        System.out.println(">>> TokenService: Validando o token...");
+        Algorithm algorithm = Algorithm.HMAC256(secret);
 
-            return JWT.require(algorithm)
-                    .withIssuer("SignaSafe API") // Verifica se o emissor é o mesmo
-                    .build()
-                    .verify(token) // Verifica a assinatura e a validade
-                    .getSubject(); // Retorna o assunto (o e-mail do usuário)
-        } catch (JWTVerificationException exception) {
-            // Se o token for inválido (expirado, assinatura incorreta), retorna uma string vazia.
-            return "";
-        }
+        // 1. Verificamos e extraímos o 'subject' para uma variável
+        String subject = JWT.require(algorithm)
+                .withIssuer("SignaSafe API")
+                .build()
+                .verify(token)
+                .getSubject();
+
+        // 2. Agora que temos o subject, podemos usá-lo (para o log)
+        System.out.println(">>> TokenService: Validação bem-sucedida! Subject: " + subject);
+        
+        // 3. E finalmente, retornamos o valor da variável
+        return subject;
+
+    } catch (JWTVerificationException exception) {
+        // Se a validação falhar (token inválido, expirado, etc.), o erro será capturado aqui.
+        System.out.println(">>> TokenService: ERRO NA VALIDAÇÃO - " + exception.getMessage());
+        return "";
     }
+}
 
     /**
      * Gera a data de expiração do token.
