@@ -55,7 +55,7 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // Permite requisições da nossa origem do Angular
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200","signasafe-ui-git-main-william-martins-projects.vercel.app"));
         // Permite os métodos HTTP que nosso frontend usará
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         // Permite os cabeçalhos que nosso frontend poderá enviar
