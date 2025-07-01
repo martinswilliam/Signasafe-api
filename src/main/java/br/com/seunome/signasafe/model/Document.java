@@ -2,7 +2,7 @@ package br.com.seunome.signasafe.model;
 
 
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -38,5 +38,5 @@ public class Document {
     @JoinColumn(name = "owner_id") // Define a coluna de chave estrangeira no banco
     private User owner;
 
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 }

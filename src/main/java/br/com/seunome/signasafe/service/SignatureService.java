@@ -1,19 +1,20 @@
 package br.com.seunome.signasafe.service;
 
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.time.Instant;
+import java.util.Base64;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import br.com.seunome.signasafe.model.Document;
 import br.com.seunome.signasafe.model.Signature;
 import br.com.seunome.signasafe.model.User;
 import br.com.seunome.signasafe.repository.DocumentRepository;
 import br.com.seunome.signasafe.repository.SignatureRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.security.KeyFactory;
-import java.security.PrivateKey;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.UUID;
 
 @Service
 public class SignatureService {
@@ -52,7 +53,7 @@ public class SignatureService {
         newSignature.setDocument(document);
         newSignature.setSigner(signer);
         newSignature.setSignatureData(signatureBase64);
-        newSignature.setSignedAt(LocalDateTime.now());
+        newSignature.setSignedAt(Instant.now());
 
         return signatureRepository.save(newSignature);
     }

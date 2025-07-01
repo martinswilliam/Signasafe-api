@@ -2,7 +2,7 @@ package br.com.seunome.signasafe.model;
 
 
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -37,5 +37,5 @@ public class Signature {
     @Column(columnDefinition = "TEXT")
     private String signatureData; // A assinatura digital em si, em Base64
 
-    private LocalDateTime signedAt;
+    private Instant signedAt;
 }

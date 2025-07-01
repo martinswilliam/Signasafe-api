@@ -1,7 +1,7 @@
 package br.com.seunome.signasafe.service;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
@@ -54,7 +54,7 @@ public class DocumentService {
         newDocument.setDocumentPath(filePathInStorage);
         newDocument.setDocumentHash(documentHashBase64);
         newDocument.setOwner(owner);
-        newDocument.setCreatedAt(LocalDateTime.now());
+        newDocument.setCreatedAt(Instant.now());
 
         return documentRepository.save(newDocument);
     }
